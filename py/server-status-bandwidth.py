@@ -55,22 +55,30 @@ def get_server_status_bandwidth(server_status_url: str) -> {}:
     return result
 
 
+def format_message(data: {}) -> str:
+    script_filename = os.path.basename(__file__)
+    tgbot_message = f"""
+【当前年月】: {data['current_date']}
+【当月累计上传流量】: {data['network_out_month']}
+【当月累计下载流量】: {data['network_in_month']}
+【当月总计流量】: {data['network_bandwidth_total']}
+【机器在线数】: {data['online_count']}
+ message send by: {script_filename}
+ #ServerStatus流量推送
+    """
+    return tgbot_message
+
+
 def main():
     # 可以在这里设置环境遍历
     server_status_url = os.getenv("server_status_url", "<请设置为自己的server-status面板服务地址>")
     api_url = f"{server_status_url}/json/stats.json"
     status_bandwidth = get_server_status_bandwidth(api_url)
     # print(status_bandwidth)
-    tgbot_message = f"""
-当前年月: {status_bandwidth['current_date']}
-当月累计上传流量: {status_bandwidth['network_out_month']}
-当月累计下载流量: {status_bandwidth['network_in_month']}
-当月总计流量: {status_bandwidth['network_bandwidth_total']}
-机器在线数: {status_bandwidth['online_count']}
-    """
+    tgbot_message = format_message(status_bandwidth)
     print(tgbot_message)
-    # from notify import telegram_bot
-    # telegram_bot("ServerStatus流量推送",tgbot_message)
+    # import notify
+    # notify.send("ServerStatus流量推送",tgbot_message)
 
 
 if __name__ == '__main__':
